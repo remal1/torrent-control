@@ -148,7 +148,9 @@ const loadOptions = () => {
                 username: '',
                 password: '',
                 directories: [],
-                clientOptions: {}
+                clientOptions: {},
+                autoPaths: [],
+                autoPath: false
             }
         ]
     };
@@ -183,6 +185,7 @@ const whitelist = [
     // Site specific
     /^https:\/\/anidex\.info\/dl\/\d+$/,
     /^https:\/\/animebytes\.tv\/torrent\/\d+\/download\/$/,
+    /\/torrent\/download\.*/
 ];
 
 const isTorrentUrl = (url) => {

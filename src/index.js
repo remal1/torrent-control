@@ -27,8 +27,25 @@ loadOptions().then((newOptions) => {
     registerHandler();
 });
 
+const pathFinder = (name) => {
+    let path;
+    const server = options.servers[options.globals.currentServer];
+    if (server.autoPath && server.directories.length) {
+        for (const dir of server.directories) {
+            if (!dir.pattern) continue;
+            const patt = new RegExp(`${dir.pattern}`, "i");
+            const found = patt.test(name);
+            if (found) {
+                path = dir.dir;
+                break;
+            }
+        }
+    }
+    return path;
+}
+
 const addTorrent = (url, referer = null, torrentOptions = {}) => {
-    
+    console.log("addTorrent", url, torrentOptions)
     torrentOptions = {
         paused: false,
         path: null,
@@ -49,7 +66,8 @@ const addTorrent = (url, referer = null, torrentOptions = {}) => {
             .then(() => connection.addTorrentUrl(url, torrentOptions)
                 .then(() => {
                     const torrentName = getMagnetUrlName(url);
-                    notification(chrome.i18n.getMessage('torrentAddedNotification') + (torrentName ? ' ' + torrentName : ''));
+                    torrentOptions.path = pathFinder(torrentName);
+                    notification(chrome.i18n.getMessage('torrentAddedNotification') + (torrentName ? '\r\nName: ' + torrentName + (torrentOptions.path ? `\r\nPath: ${torrentOptions.path}` : '') : ''));
                     connection.logOut();
                 })
             ).catch((error) => {
@@ -63,12 +81,16 @@ const addTorrent = (url, referer = null, torrentOptions = {}) => {
     } else {
         fetchTorrent(url, referer)
             .then(({torrent, torrentName}) => connection.logIn()
-                .then(() => connection.addTorrent(torrent, torrentOptions)
+                .then(() => {
+                    torrentOptions.path = pathFinder(torrentName);
+                    connection.addTorrent(torrent, torrentOptions)
                     .then(() => {
-                        notification(chrome.i18n.getMessage('torrentAddedNotification') + (torrentName ? ' ' + torrentName : ''));
+                        const msg = chrome.i18n.getMessage('torrentAddedNotification') + (torrentName ? '\r\nName: ' + torrentName + (torrentOptions.path ? `\r\nPath: ${torrentOptions.path}` : '') : '')
+                        console.log(msg)
+                        notification(msg);
                         connection.logOut();
                     })
-                )
+                })
             ).catch((error) => {
                 connection.removeEventListeners();
 
@@ -262,7 +284,7 @@ const createContextMenu = () => {
                 chrome.contextMenus.create({
                     id: 'add-torrent-path-' + i,
                     parentId: 'add-torrent-path',
-                    title: directory,
+                    title: directory.dir,
                     contexts: ['link']
                 });
             });
@@ -292,7 +314,7 @@ const createContextMenu = () => {
             serverOptions.directories.forEach((directory, i) => {
                 chrome.contextMenus.create({
                     id: 'add-torrent-path-' + i,
-                    title: directory,
+                    title: directory.dir,
                     contexts: ['link']
                 });
             });
@@ -350,7 +372,7 @@ const registerHandler = () => {
         else if (pathId)
             addTorrent(info.linkUrl, info.pageUrl, {
                 paused: options.globals.addPaused,
-                path: options.servers[options.globals.currentServer].directories[~~pathId[1]],
+                path: options.servers[options.globals.currentServer].directories[~~pathId[1]].dir,
                 ...clientOptions
             });
         else if (info.menuItemId === 'add-torrent-advanced')
@@ -391,12 +413,12 @@ const registerHandler = () => {
     );
 
     chrome.webRequest.onBeforeRequest.addListener((details) => {
-            if (options.globals.catchUrls && details.type === 'main_frame' && isTorrentUrl(details.url)) {
+            if (options.globals.catchUrls && (details.type === 'main_frame' || details.type === 'sub_frame') && isTorrentUrl(details.url)) {
                 if (options.globals.addAdvanced) {
                     addAdvancedDialog(details.url, details.originUrl);
                 } else {
                     const clientOptions = options.servers[options.globals.currentServer].clientOptions || {};
-
+                    
                     addTorrent(details.url, details.originUrl, {
                         paused: options.globals.addPaused,
                         ...clientOptions

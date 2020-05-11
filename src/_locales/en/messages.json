@@ -182,5 +182,21 @@
   "addAsPausedOption": {
     "message": "Add as paused",
     "description": "Add as paused"
+  },
+  "autoPathOptions": {
+    "message": "Auto directory selection",
+    "description": "Auto folder selection based on torrent's name"
+  },
+  "newPath": {
+    "message": "New",
+    "description": "Add new save folder"
+  },
+  "deletePath": {
+    "message": "Delete",
+    "description": "Delete save folder"
+  },
+  "clearPath": {
+    "message": "Clear",
+    "description": "Clear content of the fields"
   }
 }
