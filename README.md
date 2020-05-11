@@ -1,7 +1,5 @@
 Add torrent and magnet links to your Bittorrent client's web interface.
 
-[Install to Firefox](https://addons.mozilla.org/addon/torrent-control/)
-
 Features:
 - Supports magnet links
 - Supports private trackers
