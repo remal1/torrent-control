@@ -45,7 +45,6 @@ const pathFinder = (name) => {
 }
 
 const addTorrent = (url, referer = null, torrentOptions = {}) => {
-    console.log("addTorrent", url, torrentOptions)
     torrentOptions = {
         paused: false,
         path: null,
@@ -86,7 +85,6 @@ const addTorrent = (url, referer = null, torrentOptions = {}) => {
                     connection.addTorrent(torrent, torrentOptions)
                     .then(() => {
                         const msg = chrome.i18n.getMessage('torrentAddedNotification') + (torrentName ? '\r\nName: ' + torrentName + (torrentOptions.path ? `\r\nPath: ${torrentOptions.path}` : '') : '')
-                        console.log(msg)
                         notification(msg);
                         connection.logOut();
                     })

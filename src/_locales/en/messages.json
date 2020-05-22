@@ -198,5 +198,9 @@
   "clearPath": {
     "message": "Clear",
     "description": "Clear content of the fields"
+  },
+  "createSubFolderOption": {
+    "message": "Create subfolder",
+    "description": "Create subfolder"
   }
 }

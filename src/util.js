@@ -80,6 +80,10 @@ const clientList = [
             {
                 name: 'firstLastPiecePrio',
                 description: chrome.i18n.getMessage('firstLastPiecePriorityOption')
+            },
+            {
+                name: 'createSubFolder',
+                description: chrome.i18n.getMessage('createSubFolderOption')
             }
         ]
     },

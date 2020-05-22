@@ -84,6 +84,10 @@ class qBittorrentApi extends BaseClient {
 
                 if (options.firstLastPiecePrio)
                     form.append('firstLastPiecePrio', true);
+
+                if (options.createSubFolder)
+                    form.append('root_folder', true);
+
             } else {
                 form.append('torrents', torrent, 'temp.torrent');
             }
@@ -125,6 +129,9 @@ class qBittorrentApi extends BaseClient {
 
                 if (options.firstLastPiecePrio)
                     form.append('firstLastPiecePrio', true);
+
+                if (options.createSubFolder)
+                    form.append('root_folder', true);
             }
 
             fetch(hostname + addTorrentUrlPath, {

@@ -9,14 +9,14 @@ const restoreOptions = () => {
     loadOptions().then((options) => {
         const serverOptions = options.servers[options.globals.currentServer];
         const client = clientList.find((client) => client.id === serverOptions.application);
-
         document.querySelector('#addpaused').checked = options.globals.addPaused;
+        document.querySelector('#createSubFolder').checked = serverOptions.clientOptions.createSubFolder;
 
         if (client.torrentOptions && client.torrentOptions.includes('path')) {
             serverOptions.directories.forEach((directory) => {
                 let element = document.createElement('option');
-                element.setAttribute('value', directory);
-                element.textContent = directory;
+                element.setAttribute('value', directory.dir);
+                element.textContent = directory.dir;
                 document.querySelector('#downloadLocation').appendChild(element);
             });
         } else {
@@ -47,6 +47,8 @@ const restoreOptions = () => {
 
         if (!client.torrentOptions || !client.torrentOptions.includes('paused'))
             document.querySelector('#addpaused').disabled = true;
+        if (!client.torrentOptions || !client.torrentOptions.includes('path'))
+            document.querySelector('#createSubFolder').disabled = true;
     });
 }
 
@@ -59,9 +61,11 @@ document.querySelector('#add-torrent').addEventListener('click', (e) => {
     const path = document.querySelector('#downloadLocation').value;
     const addPaused = document.querySelector('#addpaused').checked;
     const server = document.querySelector('#server').value;
+    const createSubFolder = document.querySelector('#createSubFolder').checked;
 
     let options = {
-        paused: addPaused
+        paused: addPaused,
+        createSubFolder: createSubFolder
     };
 
     if (label.length)
